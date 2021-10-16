@@ -219,6 +219,33 @@
      3.2.1 CBOW の推論処理
     </a>
    </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id1">
+     3.2.2 CBOW の学習
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#id2">
+     3.2.3
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#id3">
+   3.3 学習データの準備
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#skip-gram">
+     3.5.2 skip-gram
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#vs">
+     3.5.3 カウントベース vs 推論ベース
+    </a>
+   </li>
   </ul>
  </li>
 </ul>
@@ -274,19 +301,1199 @@
 </ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ch03</span> <span class="kn">import</span> <span class="n">cbow_predict</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ch03</span>
+<span class="kn">from</span> <span class="nn">ch03</span> <span class="kn">import</span> <span class="n">cbow_predict</span>
 
 cbow_predict<span class="o">??</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 0.24906535 -0.14538234  0.1211336   0.50541595  0.09799716 -0.03629356
-  -0.44958967]]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[ 1.05519517 -1.80941117 -1.4942526   1.36136807  0.27138488 -2.13686505
+   2.72876064]]
 </pre></div>
 </div>
 </div>
 </div>
+</div>
+<div class="section" id="id1">
+<h3>3.2.2 CBOW の学習<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>出力層のスコアに Softmax を掛けると、前後の単語を入力したときに中央に出現する単語の確率になる</p></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h3>3.2.3<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>出力側の重みにも単語の意味がエンコードされている</p></li>
+<li><p>word2vec では入力側の重みだけが用いられることが多い</p></li>
+<li><p>GloVe では2つの重みを足し合わせている</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>3.3 学習データの準備<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># コーパスを作成</span>
+<span class="kn">import</span> <span class="nn">common.util</span>
+<span class="kn">from</span> <span class="nn">common.util</span> <span class="kn">import</span> <span class="n">preprocess</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;You say goodbye and I say hello .&#39;</span>
+<span class="c1">#text = &#39;I say high you say low .&#39;</span>
+<span class="c1">#text = &#39;You say stop and I say go go go .&#39;</span>
+<span class="n">corpus</span><span class="p">,</span> <span class="n">word_to_id</span><span class="p">,</span> <span class="n">id_to_word</span> <span class="o">=</span> <span class="n">preprocess</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">corpus</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">id_to_word</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0 1 2 3 4 1 5 6 7]
+{0: &#39;you&#39;, 1: &#39;say&#39;, 2: &#39;goodbye&#39;, 3: &#39;and&#39;, 4: &#39;i&#39;, 5: &#39;hello&#39;, 6: &#39;&#39;, 7: &#39;.&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># corpus から context, target を作成</span>
+<span class="kn">from</span> <span class="nn">common.util</span> <span class="kn">import</span> <span class="n">create_contexts_target</span>
+
+create_contexts_target<span class="o">??</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">contexts</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">create_contexts_target</span><span class="p">(</span><span class="n">corpus</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">contexts</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0 2]
+ [1 3]
+ [2 4]
+ [3 1]
+ [4 5]
+ [1 6]
+ [5 7]]
+[1 2 3 4 1 5 6]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 3.3.2 one-hot 表現への変換</span>
+<span class="kn">from</span> <span class="nn">common.util</span> <span class="kn">import</span> <span class="n">convert_one_hot</span>
+
+<span class="n">vocab_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">word_to_id</span><span class="p">)</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">convert_one_hot</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">vocab_size</span><span class="p">)</span>
+<span class="n">contexts</span> <span class="o">=</span> <span class="n">convert_one_hot</span><span class="p">(</span><span class="n">contexts</span><span class="p">,</span> <span class="n">vocab_size</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">contexts</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0 1 0 0 0 0 0 0]
+ [0 0 1 0 0 0 0 0]
+ [0 0 0 1 0 0 0 0]
+ [0 0 0 0 1 0 0 0]
+ [0 1 0 0 0 0 0 0]
+ [0 0 0 0 0 1 0 0]
+ [0 0 0 0 0 0 1 0]]
+[[[1 0 0 0 0 0 0 0]
+  [0 0 1 0 0 0 0 0]]
+
+ [[0 1 0 0 0 0 0 0]
+  [0 0 0 1 0 0 0 0]]
+
+ [[0 0 1 0 0 0 0 0]
+  [0 0 0 0 1 0 0 0]]
+
+ [[0 0 0 1 0 0 0 0]
+  [0 1 0 0 0 0 0 0]]
+
+ [[0 0 0 0 1 0 0 0]
+  [0 0 0 0 0 1 0 0]]
+
+ [[0 1 0 0 0 0 0 0]
+  [0 0 0 0 0 0 1 0]]
+
+ [[0 0 0 0 0 1 0 0]
+  [0 0 0 0 0 0 0 1]]]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## 3.4 CBOW  モデルの実装</span>
+<span class="kn">from</span> <span class="nn">ch03</span> <span class="kn">import</span> <span class="n">simple_cbow</span>
+simple_cbow<span class="o">??</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## 3.4.1 学習コードの実装</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),</span> <span class="s1">&#39;deep-learning-from-scratch-2/ch03&#39;</span><span class="p">))</span>
+<span class="kn">from</span> <span class="nn">ch03</span> <span class="kn">import</span> <span class="n">simple_cbow</span>
+<span class="kn">from</span> <span class="nn">ch03</span> <span class="kn">import</span> <span class="n">train</span>
+train<span class="o">??</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>| epoch 1 |  iter 1 / 2 | time 0[s] | loss 1.95
+| epoch 2 |  iter 1 / 2 | time 0[s] | loss 1.95
+| epoch 3 |  iter 1 / 2 | time 0[s] | loss 1.95
+| epoch 4 |  iter 1 / 2 | time 0[s] | loss 1.95
+| epoch 5 |  iter 1 / 2 | time 0[s] | loss 1.95
+| epoch 6 |  iter 1 / 2 | time 0[s] | loss 1.95
+| epoch 7 |  iter 1 / 2 | time 0[s] | loss 1.95
+| epoch 8 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 9 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 10 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 11 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 12 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 13 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 14 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 15 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 16 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 17 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 18 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 19 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 20 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 21 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 22 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 23 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 24 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 25 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 26 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 27 |  iter 1 / 2 | time 0[s] | loss 1.94
+| epoch 28 |  iter 1 / 2 | time 0[s] | loss 1.93
+| epoch 29 |  iter 1 / 2 | time 0[s] | loss 1.93
+| epoch 30 |  iter 1 / 2 | time 0[s] | loss 1.93
+| epoch 31 |  iter 1 / 2 | time 0[s] | loss 1.93
+| epoch 32 |  iter 1 / 2 | time 0[s] | loss 1.93
+| epoch 33 |  iter 1 / 2 | time 0[s] | loss 1.93
+| epoch 34 |  iter 1 / 2 | time 0[s] | loss 1.93
+| epoch 35 |  iter 1 / 2 | time 0[s] | loss 1.93
+| epoch 36 |  iter 1 / 2 | time 0[s] | loss 1.92
+| epoch 37 |  iter 1 / 2 | time 0[s] | loss 1.93
+| epoch 38 |  iter 1 / 2 | time 0[s] | loss 1.92
+| epoch 39 |  iter 1 / 2 | time 0[s] | loss 1.92
+| epoch 40 |  iter 1 / 2 | time 0[s] | loss 1.92
+| epoch 41 |  iter 1 / 2 | time 0[s] | loss 1.92
+| epoch 42 |  iter 1 / 2 | time 0[s] | loss 1.91
+| epoch 43 |  iter 1 / 2 | time 0[s] | loss 1.92
+| epoch 44 |  iter 1 / 2 | time 0[s] | loss 1.91
+| epoch 45 |  iter 1 / 2 | time 0[s] | loss 1.91
+| epoch 46 |  iter 1 / 2 | time 0[s] | loss 1.91
+| epoch 47 |  iter 1 / 2 | time 0[s] | loss 1.90
+| epoch 48 |  iter 1 / 2 | time 0[s] | loss 1.90
+| epoch 49 |  iter 1 / 2 | time 0[s] | loss 1.90
+| epoch 50 |  iter 1 / 2 | time 0[s] | loss 1.90
+| epoch 51 |  iter 1 / 2 | time 0[s] | loss 1.90
+| epoch 52 |  iter 1 / 2 | time 0[s] | loss 1.90
+| epoch 53 |  iter 1 / 2 | time 0[s] | loss 1.89
+| epoch 54 |  iter 1 / 2 | time 0[s] | loss 1.89
+| epoch 55 |  iter 1 / 2 | time 0[s] | loss 1.88
+| epoch 56 |  iter 1 / 2 | time 0[s] | loss 1.88
+| epoch 57 |  iter 1 / 2 | time 0[s] | loss 1.89
+| epoch 58 |  iter 1 / 2 | time 0[s] | loss 1.87
+| epoch 59 |  iter 1 / 2 | time 0[s] | loss 1.87
+| epoch 60 |  iter 1 / 2 | time 0[s] | loss 1.88
+| epoch 61 |  iter 1 / 2 | time 0[s] | loss 1.87
+| epoch 62 |  iter 1 / 2 | time 0[s] | loss 1.86
+| epoch 63 |  iter 1 / 2 | time 0[s] | loss 1.87
+| epoch 64 |  iter 1 / 2 | time 0[s] | loss 1.86
+| epoch 65 |  iter 1 / 2 | time 0[s] | loss 1.85
+| epoch 66 |  iter 1 / 2 | time 0[s] | loss 1.85
+| epoch 67 |  iter 1 / 2 | time 0[s] | loss 1.85
+| epoch 68 |  iter 1 / 2 | time 0[s] | loss 1.85
+| epoch 69 |  iter 1 / 2 | time 0[s] | loss 1.84
+| epoch 70 |  iter 1 / 2 | time 0[s] | loss 1.84
+| epoch 71 |  iter 1 / 2 | time 0[s] | loss 1.83
+| epoch 72 |  iter 1 / 2 | time 0[s] | loss 1.84
+| epoch 73 |  iter 1 / 2 | time 0[s] | loss 1.83
+| epoch 74 |  iter 1 / 2 | time 0[s] | loss 1.83
+| epoch 75 |  iter 1 / 2 | time 0[s] | loss 1.82
+| epoch 76 |  iter 1 / 2 | time 0[s] | loss 1.80
+| epoch 77 |  iter 1 / 2 | time 0[s] | loss 1.81
+| epoch 78 |  iter 1 / 2 | time 0[s] | loss 1.82
+| epoch 79 |  iter 1 / 2 | time 0[s] | loss 1.81
+| epoch 80 |  iter 1 / 2 | time 0[s] | loss 1.81
+| epoch 81 |  iter 1 / 2 | time 0[s] | loss 1.80
+| epoch 82 |  iter 1 / 2 | time 0[s] | loss 1.78
+| epoch 83 |  iter 1 / 2 | time 0[s] | loss 1.79
+| epoch 84 |  iter 1 / 2 | time 0[s] | loss 1.78
+| epoch 85 |  iter 1 / 2 | time 0[s] | loss 1.79
+| epoch 86 |  iter 1 / 2 | time 0[s] | loss 1.78
+| epoch 87 |  iter 1 / 2 | time 0[s] | loss 1.77
+| epoch 88 |  iter 1 / 2 | time 0[s] | loss 1.75
+| epoch 89 |  iter 1 / 2 | time 0[s] | loss 1.76
+| epoch 90 |  iter 1 / 2 | time 0[s] | loss 1.78
+| epoch 91 |  iter 1 / 2 | time 0[s] | loss 1.75
+| epoch 92 |  iter 1 / 2 | time 0[s] | loss 1.74
+| epoch 93 |  iter 1 / 2 | time 0[s] | loss 1.74
+| epoch 94 |  iter 1 / 2 | time 0[s] | loss 1.75
+| epoch 95 |  iter 1 / 2 | time 0[s] | loss 1.74
+| epoch 96 |  iter 1 / 2 | time 0[s] | loss 1.74
+| epoch 97 |  iter 1 / 2 | time 0[s] | loss 1.72
+| epoch 98 |  iter 1 / 2 | time 0[s] | loss 1.72
+| epoch 99 |  iter 1 / 2 | time 0[s] | loss 1.72
+| epoch 100 |  iter 1 / 2 | time 0[s] | loss 1.72
+| epoch 101 |  iter 1 / 2 | time 0[s] | loss 1.71
+| epoch 102 |  iter 1 / 2 | time 0[s] | loss 1.71
+| epoch 103 |  iter 1 / 2 | time 0[s] | loss 1.71
+| epoch 104 |  iter 1 / 2 | time 0[s] | loss 1.71
+| epoch 105 |  iter 1 / 2 | time 0[s] | loss 1.68
+| epoch 106 |  iter 1 / 2 | time 0[s] | loss 1.70
+| epoch 107 |  iter 1 / 2 | time 0[s] | loss 1.64
+| epoch 108 |  iter 1 / 2 | time 0[s] | loss 1.70
+| epoch 109 |  iter 1 / 2 | time 0[s] | loss 1.69
+| epoch 110 |  iter 1 / 2 | time 0[s] | loss 1.65
+| epoch 111 |  iter 1 / 2 | time 0[s] | loss 1.67
+| epoch 112 |  iter 1 / 2 | time 0[s] | loss 1.64
+| epoch 113 |  iter 1 / 2 | time 0[s] | loss 1.67
+| epoch 114 |  iter 1 / 2 | time 0[s] | loss 1.65
+| epoch 115 |  iter 1 / 2 | time 0[s] | loss 1.64
+| epoch 116 |  iter 1 / 2 | time 0[s] | loss 1.65
+| epoch 117 |  iter 1 / 2 | time 0[s] | loss 1.59
+| epoch 118 |  iter 1 / 2 | time 0[s] | loss 1.63
+| epoch 119 |  iter 1 / 2 | time 0[s] | loss 1.64
+| epoch 120 |  iter 1 / 2 | time 0[s] | loss 1.63
+| epoch 121 |  iter 1 / 2 | time 0[s] | loss 1.60
+| epoch 122 |  iter 1 / 2 | time 0[s] | loss 1.62
+| epoch 123 |  iter 1 / 2 | time 0[s] | loss 1.59
+| epoch 124 |  iter 1 / 2 | time 0[s] | loss 1.63
+| epoch 125 |  iter 1 / 2 | time 0[s] | loss 1.56
+| epoch 126 |  iter 1 / 2 | time 0[s] | loss 1.57
+| epoch 127 |  iter 1 / 2 | time 0[s] | loss 1.62
+| epoch 128 |  iter 1 / 2 | time 0[s] | loss 1.58
+| epoch 129 |  iter 1 / 2 | time 0[s] | loss 1.57
+| epoch 130 |  iter 1 / 2 | time 0[s] | loss 1.55
+| epoch 131 |  iter 1 / 2 | time 0[s] | loss 1.58
+| epoch 132 |  iter 1 / 2 | time 0[s] | loss 1.56
+| epoch 133 |  iter 1 / 2 | time 0[s] | loss 1.53
+| epoch 134 |  iter 1 / 2 | time 0[s] | loss 1.53
+| epoch 135 |  iter 1 / 2 | time 0[s] | loss 1.54
+| epoch 136 |  iter 1 / 2 | time 0[s] | loss 1.56
+| epoch 137 |  iter 1 / 2 | time 0[s] | loss 1.54
+| epoch 138 |  iter 1 / 2 | time 0[s] | loss 1.56
+| epoch 139 |  iter 1 / 2 | time 0[s] | loss 1.49
+| epoch 140 |  iter 1 / 2 | time 0[s] | loss 1.50
+| epoch 141 |  iter 1 / 2 | time 0[s] | loss 1.52
+| epoch 142 |  iter 1 / 2 | time 0[s] | loss 1.48
+| epoch 143 |  iter 1 / 2 | time 0[s] | loss 1.54
+| epoch 144 |  iter 1 / 2 | time 0[s] | loss 1.50
+| epoch 145 |  iter 1 / 2 | time 0[s] | loss 1.50
+| epoch 146 |  iter 1 / 2 | time 0[s] | loss 1.50
+| epoch 147 |  iter 1 / 2 | time 0[s] | loss 1.50
+| epoch 148 |  iter 1 / 2 | time 0[s] | loss 1.43
+| epoch 149 |  iter 1 / 2 | time 0[s] | loss 1.44
+| epoch 150 |  iter 1 / 2 | time 0[s] | loss 1.51
+| epoch 151 |  iter 1 / 2 | time 0[s] | loss 1.42
+| epoch 152 |  iter 1 / 2 | time 0[s] | loss 1.49
+| epoch 153 |  iter 1 / 2 | time 0[s] | loss 1.47
+| epoch 154 |  iter 1 / 2 | time 0[s] | loss 1.45
+| epoch 155 |  iter 1 / 2 | time 0[s] | loss 1.44
+| epoch 156 |  iter 1 / 2 | time 0[s] | loss 1.47
+| epoch 157 |  iter 1 / 2 | time 0[s] | loss 1.42
+| epoch 158 |  iter 1 / 2 | time 0[s] | loss 1.36
+| epoch 159 |  iter 1 / 2 | time 0[s] | loss 1.48
+| epoch 160 |  iter 1 / 2 | time 0[s] | loss 1.36
+| epoch 161 |  iter 1 / 2 | time 0[s] | loss 1.47
+| epoch 162 |  iter 1 / 2 | time 0[s] | loss 1.44
+| epoch 163 |  iter 1 / 2 | time 0[s] | loss 1.37
+| epoch 164 |  iter 1 / 2 | time 0[s] | loss 1.39
+| epoch 165 |  iter 1 / 2 | time 0[s] | loss 1.36
+| epoch 166 |  iter 1 / 2 | time 0[s] | loss 1.49
+| epoch 167 |  iter 1 / 2 | time 0[s] | loss 1.37
+| epoch 168 |  iter 1 / 2 | time 0[s] | loss 1.36
+| epoch 169 |  iter 1 / 2 | time 0[s] | loss 1.36
+| epoch 170 |  iter 1 / 2 | time 0[s] | loss 1.37
+| epoch 171 |  iter 1 / 2 | time 0[s] | loss 1.39
+| epoch 172 |  iter 1 / 2 | time 0[s] | loss 1.34
+| epoch 173 |  iter 1 / 2 | time 0[s] | loss 1.32
+| epoch 174 |  iter 1 / 2 | time 0[s] | loss 1.39
+| epoch 175 |  iter 1 / 2 | time 0[s] | loss 1.37
+| epoch 176 |  iter 1 / 2 | time 0[s] | loss 1.32
+| epoch 177 |  iter 1 / 2 | time 0[s] | loss 1.36
+| epoch 178 |  iter 1 / 2 | time 0[s] | loss 1.38
+| epoch 179 |  iter 1 / 2 | time 0[s] | loss 1.27
+| epoch 180 |  iter 1 / 2 | time 0[s] | loss 1.29
+| epoch 181 |  iter 1 / 2 | time 0[s] | loss 1.39
+| epoch 182 |  iter 1 / 2 | time 0[s] | loss 1.34
+| epoch 183 |  iter 1 / 2 | time 0[s] | loss 1.27
+| epoch 184 |  iter 1 / 2 | time 0[s] | loss 1.31
+| epoch 185 |  iter 1 / 2 | time 0[s] | loss 1.31
+| epoch 186 |  iter 1 / 2 | time 0[s] | loss 1.30
+| epoch 187 |  iter 1 / 2 | time 0[s] | loss 1.31
+| epoch 188 |  iter 1 / 2 | time 0[s] | loss 1.30
+| epoch 189 |  iter 1 / 2 | time 0[s] | loss 1.27
+| epoch 190 |  iter 1 / 2 | time 0[s] | loss 1.28
+| epoch 191 |  iter 1 / 2 | time 0[s] | loss 1.35
+| epoch 192 |  iter 1 / 2 | time 0[s] | loss 1.16
+| epoch 193 |  iter 1 / 2 | time 0[s] | loss 1.29
+| epoch 194 |  iter 1 / 2 | time 0[s] | loss 1.31
+| epoch 195 |  iter 1 / 2 | time 0[s] | loss 1.33
+| epoch 196 |  iter 1 / 2 | time 0[s] | loss 1.20
+| epoch 197 |  iter 1 / 2 | time 0[s] | loss 1.25
+| epoch 198 |  iter 1 / 2 | time 0[s] | loss 1.25
+| epoch 199 |  iter 1 / 2 | time 0[s] | loss 1.32
+| epoch 200 |  iter 1 / 2 | time 0[s] | loss 1.13
+| epoch 201 |  iter 1 / 2 | time 0[s] | loss 1.30
+| epoch 202 |  iter 1 / 2 | time 0[s] | loss 1.25
+| epoch 203 |  iter 1 / 2 | time 0[s] | loss 1.28
+| epoch 204 |  iter 1 / 2 | time 0[s] | loss 1.18
+| epoch 205 |  iter 1 / 2 | time 0[s] | loss 1.23
+| epoch 206 |  iter 1 / 2 | time 0[s] | loss 1.22
+| epoch 207 |  iter 1 / 2 | time 0[s] | loss 1.22
+| epoch 208 |  iter 1 / 2 | time 0[s] | loss 1.15
+| epoch 209 |  iter 1 / 2 | time 0[s] | loss 1.27
+| epoch 210 |  iter 1 / 2 | time 0[s] | loss 1.26
+| epoch 211 |  iter 1 / 2 | time 0[s] | loss 1.21
+| epoch 212 |  iter 1 / 2 | time 0[s] | loss 1.20
+| epoch 213 |  iter 1 / 2 | time 0[s] | loss 1.20
+| epoch 214 |  iter 1 / 2 | time 0[s] | loss 1.06
+| epoch 215 |  iter 1 / 2 | time 0[s] | loss 1.31
+| epoch 216 |  iter 1 / 2 | time 0[s] | loss 1.06
+| epoch 217 |  iter 1 / 2 | time 0[s] | loss 1.31
+| epoch 218 |  iter 1 / 2 | time 0[s] | loss 1.06
+| epoch 219 |  iter 1 / 2 | time 0[s] | loss 1.29
+| epoch 220 |  iter 1 / 2 | time 0[s] | loss 1.11
+| epoch 221 |  iter 1 / 2 | time 0[s] | loss 1.16
+| epoch 222 |  iter 1 / 2 | time 0[s] | loss 1.24
+| epoch 223 |  iter 1 / 2 | time 0[s] | loss 1.10
+| epoch 224 |  iter 1 / 2 | time 0[s] | loss 1.16
+| epoch 225 |  iter 1 / 2 | time 0[s] | loss 1.15
+| epoch 226 |  iter 1 / 2 | time 0[s] | loss 1.09
+| epoch 227 |  iter 1 / 2 | time 0[s] | loss 1.21
+| epoch 228 |  iter 1 / 2 | time 0[s] | loss 1.14
+| epoch 229 |  iter 1 / 2 | time 0[s] | loss 1.21
+| epoch 230 |  iter 1 / 2 | time 0[s] | loss 1.08
+| epoch 231 |  iter 1 / 2 | time 0[s] | loss 1.13
+| epoch 232 |  iter 1 / 2 | time 0[s] | loss 1.13
+| epoch 233 |  iter 1 / 2 | time 0[s] | loss 1.13
+| epoch 234 |  iter 1 / 2 | time 0[s] | loss 1.12
+| epoch 235 |  iter 1 / 2 | time 0[s] | loss 1.06
+| epoch 236 |  iter 1 / 2 | time 0[s] | loss 1.19
+| epoch 237 |  iter 1 / 2 | time 0[s] | loss 1.11
+| epoch 238 |  iter 1 / 2 | time 0[s] | loss 1.11
+| epoch 239 |  iter 1 / 2 | time 0[s] | loss 1.18
+| epoch 240 |  iter 1 / 2 | time 0[s] | loss 1.03
+| epoch 241 |  iter 1 / 2 | time 0[s] | loss 1.18
+| epoch 242 |  iter 1 / 2 | time 0[s] | loss 1.09
+| epoch 243 |  iter 1 / 2 | time 0[s] | loss 1.03
+| epoch 244 |  iter 1 / 2 | time 0[s] | loss 1.02
+| epoch 245 |  iter 1 / 2 | time 0[s] | loss 1.10
+| epoch 246 |  iter 1 / 2 | time 0[s] | loss 1.21
+| epoch 247 |  iter 1 / 2 | time 0[s] | loss 0.95
+| epoch 248 |  iter 1 / 2 | time 0[s] | loss 1.15
+| epoch 249 |  iter 1 / 2 | time 0[s] | loss 1.16
+| epoch 250 |  iter 1 / 2 | time 0[s] | loss 1.01
+| epoch 251 |  iter 1 / 2 | time 0[s] | loss 1.07
+| epoch 252 |  iter 1 / 2 | time 0[s] | loss 1.05
+| epoch 253 |  iter 1 / 2 | time 0[s] | loss 1.07
+| epoch 254 |  iter 1 / 2 | time 0[s] | loss 1.07
+| epoch 255 |  iter 1 / 2 | time 0[s] | loss 1.13
+| epoch 256 |  iter 1 / 2 | time 0[s] | loss 1.00
+| epoch 257 |  iter 1 / 2 | time 0[s] | loss 1.04
+| epoch 258 |  iter 1 / 2 | time 0[s] | loss 1.06
+| epoch 259 |  iter 1 / 2 | time 0[s] | loss 1.00
+| epoch 260 |  iter 1 / 2 | time 0[s] | loss 1.12
+| epoch 261 |  iter 1 / 2 | time 0[s] | loss 1.02
+| epoch 262 |  iter 1 / 2 | time 0[s] | loss 0.98
+| epoch 263 |  iter 1 / 2 | time 0[s] | loss 1.20
+| epoch 264 |  iter 1 / 2 | time 0[s] | loss 0.94
+| epoch 265 |  iter 1 / 2 | time 0[s] | loss 1.04
+| epoch 266 |  iter 1 / 2 | time 0[s] | loss 0.96
+| epoch 267 |  iter 1 / 2 | time 0[s] | loss 1.10
+| epoch 268 |  iter 1 / 2 | time 0[s] | loss 1.02
+| epoch 269 |  iter 1 / 2 | time 0[s] | loss 0.97
+| epoch 270 |  iter 1 / 2 | time 0[s] | loss 1.01
+| epoch 271 |  iter 1 / 2 | time 0[s] | loss 1.09
+| epoch 272 |  iter 1 / 2 | time 0[s] | loss 1.09
+| epoch 273 |  iter 1 / 2 | time 0[s] | loss 0.87
+| epoch 274 |  iter 1 / 2 | time 0[s] | loss 1.08
+| epoch 275 |  iter 1 / 2 | time 0[s] | loss 1.01
+| epoch 276 |  iter 1 / 2 | time 0[s] | loss 1.05
+| epoch 277 |  iter 1 / 2 | time 0[s] | loss 0.98
+| epoch 278 |  iter 1 / 2 | time 0[s] | loss 0.99
+| epoch 279 |  iter 1 / 2 | time 0[s] | loss 1.11
+| epoch 280 |  iter 1 / 2 | time 0[s] | loss 0.89
+| epoch 281 |  iter 1 / 2 | time 0[s] | loss 1.02
+| epoch 282 |  iter 1 / 2 | time 0[s] | loss 0.97
+| epoch 283 |  iter 1 / 2 | time 0[s] | loss 1.03
+| epoch 284 |  iter 1 / 2 | time 0[s] | loss 0.95
+| epoch 285 |  iter 1 / 2 | time 0[s] | loss 0.91
+| epoch 286 |  iter 1 / 2 | time 0[s] | loss 1.06
+| epoch 287 |  iter 1 / 2 | time 0[s] | loss 1.02
+| epoch 288 |  iter 1 / 2 | time 0[s] | loss 0.98
+| epoch 289 |  iter 1 / 2 | time 0[s] | loss 1.03
+| epoch 290 |  iter 1 / 2 | time 0[s] | loss 0.90
+| epoch 291 |  iter 1 / 2 | time 0[s] | loss 1.07
+| epoch 292 |  iter 1 / 2 | time 0[s] | loss 0.80
+| epoch 293 |  iter 1 / 2 | time 0[s] | loss 1.02
+| epoch 294 |  iter 1 / 2 | time 0[s] | loss 1.07
+| epoch 295 |  iter 1 / 2 | time 0[s] | loss 0.96
+| epoch 296 |  iter 1 / 2 | time 0[s] | loss 0.89
+| epoch 297 |  iter 1 / 2 | time 0[s] | loss 0.89
+| epoch 298 |  iter 1 / 2 | time 0[s] | loss 1.01
+| epoch 299 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 300 |  iter 1 / 2 | time 0[s] | loss 1.03
+| epoch 301 |  iter 1 / 2 | time 0[s] | loss 1.08
+| epoch 302 |  iter 1 / 2 | time 0[s] | loss 0.85
+| epoch 303 |  iter 1 / 2 | time 0[s] | loss 0.92
+| epoch 304 |  iter 1 / 2 | time 0[s] | loss 1.00
+| epoch 305 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 306 |  iter 1 / 2 | time 0[s] | loss 0.97
+| epoch 307 |  iter 1 / 2 | time 0[s] | loss 0.99
+| epoch 308 |  iter 1 / 2 | time 0[s] | loss 0.92
+| epoch 309 |  iter 1 / 2 | time 0[s] | loss 0.83
+| epoch 310 |  iter 1 / 2 | time 0[s] | loss 1.01
+| epoch 311 |  iter 1 / 2 | time 0[s] | loss 0.96
+| epoch 312 |  iter 1 / 2 | time 0[s] | loss 0.83
+| epoch 313 |  iter 1 / 2 | time 0[s] | loss 0.93
+| epoch 314 |  iter 1 / 2 | time 0[s] | loss 1.11
+| epoch 315 |  iter 1 / 2 | time 0[s] | loss 0.89
+| epoch 316 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 317 |  iter 1 / 2 | time 0[s] | loss 0.92
+| epoch 318 |  iter 1 / 2 | time 0[s] | loss 1.06
+| epoch 319 |  iter 1 / 2 | time 0[s] | loss 0.73
+| epoch 320 |  iter 1 / 2 | time 0[s] | loss 0.96
+| epoch 321 |  iter 1 / 2 | time 0[s] | loss 0.95
+| epoch 322 |  iter 1 / 2 | time 0[s] | loss 0.94
+| epoch 323 |  iter 1 / 2 | time 0[s] | loss 0.95
+| epoch 324 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 325 |  iter 1 / 2 | time 0[s] | loss 0.94
+| epoch 326 |  iter 1 / 2 | time 0[s] | loss 0.87
+| epoch 327 |  iter 1 / 2 | time 0[s] | loss 0.83
+| epoch 328 |  iter 1 / 2 | time 0[s] | loss 0.97
+| epoch 329 |  iter 1 / 2 | time 0[s] | loss 0.97
+| epoch 330 |  iter 1 / 2 | time 0[s] | loss 0.89
+| epoch 331 |  iter 1 / 2 | time 0[s] | loss 0.89
+| epoch 332 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 333 |  iter 1 / 2 | time 0[s] | loss 0.89
+| epoch 334 |  iter 1 / 2 | time 0[s] | loss 0.96
+| epoch 335 |  iter 1 / 2 | time 0[s] | loss 0.78
+| epoch 336 |  iter 1 / 2 | time 0[s] | loss 0.89
+| epoch 337 |  iter 1 / 2 | time 0[s] | loss 1.07
+| epoch 338 |  iter 1 / 2 | time 0[s] | loss 0.77
+| epoch 339 |  iter 1 / 2 | time 0[s] | loss 0.80
+| epoch 340 |  iter 1 / 2 | time 0[s] | loss 0.91
+| epoch 341 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 342 |  iter 1 / 2 | time 0[s] | loss 0.91
+| epoch 343 |  iter 1 / 2 | time 0[s] | loss 0.83
+| epoch 344 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 345 |  iter 1 / 2 | time 0[s] | loss 0.94
+| epoch 346 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 347 |  iter 1 / 2 | time 0[s] | loss 0.94
+| epoch 348 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 349 |  iter 1 / 2 | time 0[s] | loss 0.94
+| epoch 350 |  iter 1 / 2 | time 0[s] | loss 0.86
+| epoch 351 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 352 |  iter 1 / 2 | time 0[s] | loss 0.85
+| epoch 353 |  iter 1 / 2 | time 0[s] | loss 0.93
+| epoch 354 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 355 |  iter 1 / 2 | time 0[s] | loss 0.80
+| epoch 356 |  iter 1 / 2 | time 0[s] | loss 0.83
+| epoch 357 |  iter 1 / 2 | time 0[s] | loss 0.85
+| epoch 358 |  iter 1 / 2 | time 0[s] | loss 0.87
+| epoch 359 |  iter 1 / 2 | time 0[s] | loss 0.92
+| epoch 360 |  iter 1 / 2 | time 0[s] | loss 0.81
+| epoch 361 |  iter 1 / 2 | time 0[s] | loss 0.80
+| epoch 362 |  iter 1 / 2 | time 0[s] | loss 0.96
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>| epoch 363 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 364 |  iter 1 / 2 | time 0[s] | loss 0.96
+| epoch 365 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 366 |  iter 1 / 2 | time 0[s] | loss 0.86
+| epoch 367 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 368 |  iter 1 / 2 | time 0[s] | loss 0.94
+| epoch 369 |  iter 1 / 2 | time 0[s] | loss 0.83
+| epoch 370 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 371 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 372 |  iter 1 / 2 | time 0[s] | loss 1.01
+| epoch 373 |  iter 1 / 2 | time 0[s] | loss 0.84
+| epoch 374 |  iter 1 / 2 | time 0[s] | loss 0.81
+| epoch 375 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 376 |  iter 1 / 2 | time 0[s] | loss 0.81
+| epoch 377 |  iter 1 / 2 | time 0[s] | loss 0.87
+| epoch 378 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 379 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 380 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 381 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 382 |  iter 1 / 2 | time 0[s] | loss 1.00
+| epoch 383 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 384 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 385 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 386 |  iter 1 / 2 | time 0[s] | loss 0.93
+| epoch 387 |  iter 1 / 2 | time 0[s] | loss 0.54
+| epoch 388 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 389 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 390 |  iter 1 / 2 | time 0[s] | loss 0.81
+| epoch 391 |  iter 1 / 2 | time 0[s] | loss 0.80
+| epoch 392 |  iter 1 / 2 | time 0[s] | loss 0.80
+| epoch 393 |  iter 1 / 2 | time 0[s] | loss 0.94
+| epoch 394 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 395 |  iter 1 / 2 | time 0[s] | loss 0.86
+| epoch 396 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 397 |  iter 1 / 2 | time 0[s] | loss 0.99
+| epoch 398 |  iter 1 / 2 | time 0[s] | loss 0.68
+| epoch 399 |  iter 1 / 2 | time 0[s] | loss 0.84
+| epoch 400 |  iter 1 / 2 | time 0[s] | loss 0.87
+| epoch 401 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 402 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 403 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 404 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 405 |  iter 1 / 2 | time 0[s] | loss 0.99
+| epoch 406 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 407 |  iter 1 / 2 | time 0[s] | loss 0.93
+| epoch 408 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 409 |  iter 1 / 2 | time 0[s] | loss 0.78
+| epoch 410 |  iter 1 / 2 | time 0[s] | loss 0.83
+| epoch 411 |  iter 1 / 2 | time 0[s] | loss 0.78
+| epoch 412 |  iter 1 / 2 | time 0[s] | loss 0.85
+| epoch 413 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 414 |  iter 1 / 2 | time 0[s] | loss 0.78
+| epoch 415 |  iter 1 / 2 | time 0[s] | loss 0.90
+| epoch 416 |  iter 1 / 2 | time 0[s] | loss 0.77
+| epoch 417 |  iter 1 / 2 | time 0[s] | loss 0.64
+| epoch 418 |  iter 1 / 2 | time 0[s] | loss 0.77
+| epoch 419 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 420 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 421 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 422 |  iter 1 / 2 | time 0[s] | loss 0.64
+| epoch 423 |  iter 1 / 2 | time 0[s] | loss 0.76
+| epoch 424 |  iter 1 / 2 | time 0[s] | loss 0.90
+| epoch 425 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 426 |  iter 1 / 2 | time 0[s] | loss 0.81
+| epoch 427 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 428 |  iter 1 / 2 | time 0[s] | loss 0.97
+| epoch 429 |  iter 1 / 2 | time 0[s] | loss 0.75
+| epoch 430 |  iter 1 / 2 | time 0[s] | loss 0.77
+| epoch 431 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 432 |  iter 1 / 2 | time 0[s] | loss 0.89
+| epoch 433 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 434 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 435 |  iter 1 / 2 | time 0[s] | loss 0.76
+| epoch 436 |  iter 1 / 2 | time 0[s] | loss 0.75
+| epoch 437 |  iter 1 / 2 | time 0[s] | loss 0.68
+| epoch 438 |  iter 1 / 2 | time 0[s] | loss 0.78
+| epoch 439 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 440 |  iter 1 / 2 | time 0[s] | loss 0.75
+| epoch 441 |  iter 1 / 2 | time 0[s] | loss 0.80
+| epoch 442 |  iter 1 / 2 | time 0[s] | loss 0.83
+| epoch 443 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 444 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 445 |  iter 1 / 2 | time 0[s] | loss 0.69
+| epoch 446 |  iter 1 / 2 | time 0[s] | loss 0.87
+| epoch 447 |  iter 1 / 2 | time 0[s] | loss 0.54
+| epoch 448 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 449 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 450 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 451 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 452 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 453 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 454 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 455 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 456 |  iter 1 / 2 | time 0[s] | loss 0.68
+| epoch 457 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 458 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 459 |  iter 1 / 2 | time 0[s] | loss 0.75
+| epoch 460 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 461 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 462 |  iter 1 / 2 | time 0[s] | loss 0.80
+| epoch 463 |  iter 1 / 2 | time 0[s] | loss 0.73
+| epoch 464 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 465 |  iter 1 / 2 | time 0[s] | loss 0.86
+| epoch 466 |  iter 1 / 2 | time 0[s] | loss 0.64
+| epoch 467 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 468 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 469 |  iter 1 / 2 | time 0[s] | loss 0.86
+| epoch 470 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 471 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 472 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 473 |  iter 1 / 2 | time 0[s] | loss 0.80
+| epoch 474 |  iter 1 / 2 | time 0[s] | loss 0.86
+| epoch 475 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 476 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 477 |  iter 1 / 2 | time 0[s] | loss 0.64
+| epoch 478 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 479 |  iter 1 / 2 | time 0[s] | loss 0.78
+| epoch 480 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 481 |  iter 1 / 2 | time 0[s] | loss 0.81
+| epoch 482 |  iter 1 / 2 | time 0[s] | loss 0.75
+| epoch 483 |  iter 1 / 2 | time 0[s] | loss 0.73
+| epoch 484 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 485 |  iter 1 / 2 | time 0[s] | loss 0.84
+| epoch 486 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 487 |  iter 1 / 2 | time 0[s] | loss 0.86
+| epoch 488 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 489 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 490 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 491 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 492 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 493 |  iter 1 / 2 | time 0[s] | loss 0.84
+| epoch 494 |  iter 1 / 2 | time 0[s] | loss 0.78
+| epoch 495 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 496 |  iter 1 / 2 | time 0[s] | loss 0.86
+| epoch 497 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 498 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 499 |  iter 1 / 2 | time 0[s] | loss 0.84
+| epoch 500 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 501 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 502 |  iter 1 / 2 | time 0[s] | loss 0.81
+| epoch 503 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 504 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 505 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 506 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 507 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 508 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 509 |  iter 1 / 2 | time 0[s] | loss 0.76
+| epoch 510 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 511 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 512 |  iter 1 / 2 | time 0[s] | loss 0.92
+| epoch 513 |  iter 1 / 2 | time 0[s] | loss 0.46
+| epoch 514 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 515 |  iter 1 / 2 | time 0[s] | loss 0.90
+| epoch 516 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 517 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 518 |  iter 1 / 2 | time 0[s] | loss 0.76
+| epoch 519 |  iter 1 / 2 | time 0[s] | loss 0.78
+| epoch 520 |  iter 1 / 2 | time 0[s] | loss 0.69
+| epoch 521 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 522 |  iter 1 / 2 | time 0[s] | loss 0.69
+| epoch 523 |  iter 1 / 2 | time 0[s] | loss 0.92
+| epoch 524 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 525 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 526 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 527 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 528 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 529 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 530 |  iter 1 / 2 | time 0[s] | loss 0.68
+| epoch 531 |  iter 1 / 2 | time 0[s] | loss 0.78
+| epoch 532 |  iter 1 / 2 | time 0[s] | loss 0.75
+| epoch 533 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 534 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 535 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 536 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 537 |  iter 1 / 2 | time 0[s] | loss 0.78
+| epoch 538 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 539 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 540 |  iter 1 / 2 | time 0[s] | loss 0.84
+| epoch 541 |  iter 1 / 2 | time 0[s] | loss 0.68
+| epoch 542 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 543 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 544 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 545 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 546 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 547 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 548 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 549 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 550 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 551 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 552 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 553 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 554 |  iter 1 / 2 | time 0[s] | loss 0.77
+| epoch 555 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 556 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 557 |  iter 1 / 2 | time 0[s] | loss 0.80
+| epoch 558 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 559 |  iter 1 / 2 | time 0[s] | loss 0.73
+| epoch 560 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 561 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 562 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 563 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 564 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 565 |  iter 1 / 2 | time 0[s] | loss 0.83
+| epoch 566 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 567 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 568 |  iter 1 / 2 | time 0[s] | loss 0.73
+| epoch 569 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 570 |  iter 1 / 2 | time 0[s] | loss 0.69
+| epoch 571 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 572 |  iter 1 / 2 | time 0[s] | loss 0.90
+| epoch 573 |  iter 1 / 2 | time 0[s] | loss 0.46
+| epoch 574 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 575 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 576 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 577 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 578 |  iter 1 / 2 | time 0[s] | loss 0.83
+| epoch 579 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 580 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 581 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 582 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 583 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 584 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 585 |  iter 1 / 2 | time 0[s] | loss 0.76
+| epoch 586 |  iter 1 / 2 | time 0[s] | loss 0.68
+| epoch 587 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 588 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 589 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 590 |  iter 1 / 2 | time 0[s] | loss 0.48
+| epoch 591 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 592 |  iter 1 / 2 | time 0[s] | loss 0.76
+| epoch 593 |  iter 1 / 2 | time 0[s] | loss 0.54
+| epoch 594 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 595 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 596 |  iter 1 / 2 | time 0[s] | loss 0.68
+| epoch 597 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 598 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 599 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 600 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 601 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 602 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 603 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 604 |  iter 1 / 2 | time 0[s] | loss 0.64
+| epoch 605 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 606 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 607 |  iter 1 / 2 | time 0[s] | loss 0.68
+| epoch 608 |  iter 1 / 2 | time 0[s] | loss 0.54
+| epoch 609 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 610 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 611 |  iter 1 / 2 | time 0[s] | loss 0.68
+| epoch 612 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 613 |  iter 1 / 2 | time 0[s] | loss 0.64
+| epoch 614 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 615 |  iter 1 / 2 | time 0[s] | loss 0.84
+| epoch 616 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 617 |  iter 1 / 2 | time 0[s] | loss 0.78
+| epoch 618 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 619 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 620 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 621 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 622 |  iter 1 / 2 | time 0[s] | loss 0.84
+| epoch 623 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 624 |  iter 1 / 2 | time 0[s] | loss 0.46
+| epoch 625 |  iter 1 / 2 | time 0[s] | loss 0.77
+| epoch 626 |  iter 1 / 2 | time 0[s] | loss 0.68
+| epoch 627 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 628 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 629 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 630 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 631 |  iter 1 / 2 | time 0[s] | loss 0.88
+| epoch 632 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 633 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 634 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 635 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 636 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 637 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 638 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 639 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 640 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 641 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 642 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 643 |  iter 1 / 2 | time 0[s] | loss 0.77
+| epoch 644 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 645 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 646 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 647 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 648 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 649 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 650 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 651 |  iter 1 / 2 | time 0[s] | loss 0.49
+| epoch 652 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 653 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 654 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 655 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 656 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 657 |  iter 1 / 2 | time 0[s] | loss 0.69
+| epoch 658 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 659 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 660 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 661 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 662 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 663 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 664 |  iter 1 / 2 | time 0[s] | loss 0.80
+| epoch 665 |  iter 1 / 2 | time 0[s] | loss 0.69
+| epoch 666 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 667 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 668 |  iter 1 / 2 | time 0[s] | loss 0.73
+| epoch 669 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 670 |  iter 1 / 2 | time 0[s] | loss 0.69
+| epoch 671 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 672 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 673 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 674 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 675 |  iter 1 / 2 | time 0[s] | loss 0.64
+| epoch 676 |  iter 1 / 2 | time 0[s] | loss 0.48
+| epoch 677 |  iter 1 / 2 | time 0[s] | loss 0.73
+| epoch 678 |  iter 1 / 2 | time 0[s] | loss 0.69
+| epoch 679 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 680 |  iter 1 / 2 | time 0[s] | loss 0.48
+| epoch 681 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 682 |  iter 1 / 2 | time 0[s] | loss 0.69
+| epoch 683 |  iter 1 / 2 | time 0[s] | loss 0.75
+| epoch 684 |  iter 1 / 2 | time 0[s] | loss 0.44
+| epoch 685 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 686 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 687 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 688 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 689 |  iter 1 / 2 | time 0[s] | loss 0.73
+| epoch 690 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 691 |  iter 1 / 2 | time 0[s] | loss 0.75
+| epoch 692 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 693 |  iter 1 / 2 | time 0[s] | loss 0.48
+| epoch 694 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 695 |  iter 1 / 2 | time 0[s] | loss 0.75
+| epoch 696 |  iter 1 / 2 | time 0[s] | loss 0.37
+| epoch 697 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 698 |  iter 1 / 2 | time 0[s] | loss 0.68
+| epoch 699 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 700 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 701 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 702 |  iter 1 / 2 | time 0[s] | loss 0.48
+| epoch 703 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 704 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 705 |  iter 1 / 2 | time 0[s] | loss 0.75
+| epoch 706 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 707 |  iter 1 / 2 | time 0[s] | loss 0.75
+| epoch 708 |  iter 1 / 2 | time 0[s] | loss 0.43
+| epoch 709 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 710 |  iter 1 / 2 | time 0[s] | loss 0.68
+| epoch 711 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 712 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 713 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 714 |  iter 1 / 2 | time 0[s] | loss 0.54
+| epoch 715 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 716 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 717 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 718 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 719 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 720 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 721 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 722 |  iter 1 / 2 | time 0[s] | loss 0.47
+| epoch 723 |  iter 1 / 2 | time 0[s] | loss 0.49
+| epoch 724 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 725 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 726 |  iter 1 / 2 | time 0[s] | loss 0.54
+| epoch 727 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 728 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 729 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 730 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 731 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 732 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 733 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 734 |  iter 1 / 2 | time 0[s] | loss 0.47
+| epoch 735 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 736 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 737 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 738 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 739 |  iter 1 / 2 | time 0[s] | loss 0.42
+| epoch 740 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 741 |  iter 1 / 2 | time 0[s] | loss 0.54
+| epoch 742 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 743 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 744 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 745 |  iter 1 / 2 | time 0[s] | loss 0.47
+| epoch 746 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 747 |  iter 1 / 2 | time 0[s] | loss 0.78
+| epoch 748 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 749 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 750 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 751 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 752 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 753 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 754 |  iter 1 / 2 | time 0[s] | loss 0.49
+| epoch 755 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 756 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 757 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 758 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 759 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 760 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 761 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 762 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 763 |  iter 1 / 2 | time 0[s] | loss 0.60
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>| epoch 764 |  iter 1 / 2 | time 0[s] | loss 0.64
+| epoch 765 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 766 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 767 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 768 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 769 |  iter 1 / 2 | time 0[s] | loss 0.41
+| epoch 770 |  iter 1 / 2 | time 0[s] | loss 0.78
+| epoch 771 |  iter 1 / 2 | time 0[s] | loss 0.41
+| epoch 772 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 773 |  iter 1 / 2 | time 0[s] | loss 0.46
+| epoch 774 |  iter 1 / 2 | time 0[s] | loss 0.84
+| epoch 775 |  iter 1 / 2 | time 0[s] | loss 0.41
+| epoch 776 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 777 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 778 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 779 |  iter 1 / 2 | time 0[s] | loss 0.84
+| epoch 780 |  iter 1 / 2 | time 0[s] | loss 0.34
+| epoch 781 |  iter 1 / 2 | time 0[s] | loss 0.77
+| epoch 782 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 783 |  iter 1 / 2 | time 0[s] | loss 0.54
+| epoch 784 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 785 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 786 |  iter 1 / 2 | time 0[s] | loss 0.77
+| epoch 787 |  iter 1 / 2 | time 0[s] | loss 0.48
+| epoch 788 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 789 |  iter 1 / 2 | time 0[s] | loss 0.64
+| epoch 790 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 791 |  iter 1 / 2 | time 0[s] | loss 0.46
+| epoch 792 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 793 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 794 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 795 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 796 |  iter 1 / 2 | time 0[s] | loss 0.41
+| epoch 797 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 798 |  iter 1 / 2 | time 0[s] | loss 0.54
+| epoch 799 |  iter 1 / 2 | time 0[s] | loss 0.84
+| epoch 800 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 801 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 802 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 803 |  iter 1 / 2 | time 0[s] | loss 0.47
+| epoch 804 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 805 |  iter 1 / 2 | time 0[s] | loss 0.79
+| epoch 806 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 807 |  iter 1 / 2 | time 0[s] | loss 0.47
+| epoch 808 |  iter 1 / 2 | time 0[s] | loss 0.77
+| epoch 809 |  iter 1 / 2 | time 0[s] | loss 0.45
+| epoch 810 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 811 |  iter 1 / 2 | time 0[s] | loss 0.47
+| epoch 812 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 813 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 814 |  iter 1 / 2 | time 0[s] | loss 0.77
+| epoch 815 |  iter 1 / 2 | time 0[s] | loss 0.47
+| epoch 816 |  iter 1 / 2 | time 0[s] | loss 0.45
+| epoch 817 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 818 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 819 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 820 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 821 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 822 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 823 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 824 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 825 |  iter 1 / 2 | time 0[s] | loss 0.45
+| epoch 826 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 827 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 828 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 829 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 830 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 831 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 832 |  iter 1 / 2 | time 0[s] | loss 0.40
+| epoch 833 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 834 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 835 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 836 |  iter 1 / 2 | time 0[s] | loss 0.46
+| epoch 837 |  iter 1 / 2 | time 0[s] | loss 0.76
+| epoch 838 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 839 |  iter 1 / 2 | time 0[s] | loss 0.40
+| epoch 840 |  iter 1 / 2 | time 0[s] | loss 0.69
+| epoch 841 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 842 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 843 |  iter 1 / 2 | time 0[s] | loss 0.46
+| epoch 844 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 845 |  iter 1 / 2 | time 0[s] | loss 0.44
+| epoch 846 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 847 |  iter 1 / 2 | time 0[s] | loss 0.26
+| epoch 848 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 849 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 850 |  iter 1 / 2 | time 0[s] | loss 0.64
+| epoch 851 |  iter 1 / 2 | time 0[s] | loss 0.53
+| epoch 852 |  iter 1 / 2 | time 0[s] | loss 0.44
+| epoch 853 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 854 |  iter 1 / 2 | time 0[s] | loss 0.69
+| epoch 855 |  iter 1 / 2 | time 0[s] | loss 0.39
+| epoch 856 |  iter 1 / 2 | time 0[s] | loss 0.82
+| epoch 857 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 858 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 859 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 860 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 861 |  iter 1 / 2 | time 0[s] | loss 0.64
+| epoch 862 |  iter 1 / 2 | time 0[s] | loss 0.46
+| epoch 863 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 864 |  iter 1 / 2 | time 0[s] | loss 0.75
+| epoch 865 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 866 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 867 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 868 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 869 |  iter 1 / 2 | time 0[s] | loss 0.64
+| epoch 870 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 871 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 872 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 873 |  iter 1 / 2 | time 0[s] | loss 0.64
+| epoch 874 |  iter 1 / 2 | time 0[s] | loss 0.39
+| epoch 875 |  iter 1 / 2 | time 0[s] | loss 0.75
+| epoch 876 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 877 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 878 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 879 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 880 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 881 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 882 |  iter 1 / 2 | time 0[s] | loss 0.44
+| epoch 883 |  iter 1 / 2 | time 0[s] | loss 0.68
+| epoch 884 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 885 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 886 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 887 |  iter 1 / 2 | time 0[s] | loss 0.39
+| epoch 888 |  iter 1 / 2 | time 0[s] | loss 0.81
+| epoch 889 |  iter 1 / 2 | time 0[s] | loss 0.52
+| epoch 890 |  iter 1 / 2 | time 0[s] | loss 0.57
+| epoch 891 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 892 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 893 |  iter 1 / 2 | time 0[s] | loss 0.43
+| epoch 894 |  iter 1 / 2 | time 0[s] | loss 0.70
+| epoch 895 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 896 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 897 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 898 |  iter 1 / 2 | time 0[s] | loss 0.75
+| epoch 899 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 900 |  iter 1 / 2 | time 0[s] | loss 0.45
+| epoch 901 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 902 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 903 |  iter 1 / 2 | time 0[s] | loss 0.81
+| epoch 904 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 905 |  iter 1 / 2 | time 0[s] | loss 0.38
+| epoch 906 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 907 |  iter 1 / 2 | time 0[s] | loss 0.81
+| epoch 908 |  iter 1 / 2 | time 0[s] | loss 0.38
+| epoch 909 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 910 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 911 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 912 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 913 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 914 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 915 |  iter 1 / 2 | time 0[s] | loss 0.45
+| epoch 916 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 917 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 918 |  iter 1 / 2 | time 0[s] | loss 0.43
+| epoch 919 |  iter 1 / 2 | time 0[s] | loss 0.58
+| epoch 920 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 921 |  iter 1 / 2 | time 0[s] | loss 0.69
+| epoch 922 |  iter 1 / 2 | time 0[s] | loss 0.31
+| epoch 923 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 924 |  iter 1 / 2 | time 0[s] | loss 0.44
+| epoch 925 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 926 |  iter 1 / 2 | time 0[s] | loss 0.38
+| epoch 927 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 928 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 929 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 930 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 931 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 932 |  iter 1 / 2 | time 0[s] | loss 0.38
+| epoch 933 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 934 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 935 |  iter 1 / 2 | time 0[s] | loss 0.69
+| epoch 936 |  iter 1 / 2 | time 0[s] | loss 0.49
+| epoch 937 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 938 |  iter 1 / 2 | time 0[s] | loss 0.44
+| epoch 939 |  iter 1 / 2 | time 0[s] | loss 0.80
+| epoch 940 |  iter 1 / 2 | time 0[s] | loss 0.38
+| epoch 941 |  iter 1 / 2 | time 0[s] | loss 0.62
+| epoch 942 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 943 |  iter 1 / 2 | time 0[s] | loss 0.49
+| epoch 944 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 945 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 946 |  iter 1 / 2 | time 0[s] | loss 0.38
+| epoch 947 |  iter 1 / 2 | time 0[s] | loss 0.73
+| epoch 948 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 949 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 950 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 951 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 952 |  iter 1 / 2 | time 0[s] | loss 0.49
+| epoch 953 |  iter 1 / 2 | time 0[s] | loss 0.54
+| epoch 954 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 955 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 956 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 957 |  iter 1 / 2 | time 0[s] | loss 0.43
+| epoch 958 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 959 |  iter 1 / 2 | time 0[s] | loss 0.50
+| epoch 960 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 961 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 962 |  iter 1 / 2 | time 0[s] | loss 0.44
+| epoch 963 |  iter 1 / 2 | time 0[s] | loss 0.48
+| epoch 964 |  iter 1 / 2 | time 0[s] | loss 0.65
+| epoch 965 |  iter 1 / 2 | time 0[s] | loss 0.51
+| epoch 966 |  iter 1 / 2 | time 0[s] | loss 0.41
+| epoch 967 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 968 |  iter 1 / 2 | time 0[s] | loss 0.66
+| epoch 969 |  iter 1 / 2 | time 0[s] | loss 0.63
+| epoch 970 |  iter 1 / 2 | time 0[s] | loss 0.59
+| epoch 971 |  iter 1 / 2 | time 0[s] | loss 0.37
+| epoch 972 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 973 |  iter 1 / 2 | time 0[s] | loss 0.55
+| epoch 974 |  iter 1 / 2 | time 0[s] | loss 0.37
+| epoch 975 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 976 |  iter 1 / 2 | time 0[s] | loss 0.42
+| epoch 977 |  iter 1 / 2 | time 0[s] | loss 0.54
+| epoch 978 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 979 |  iter 1 / 2 | time 0[s] | loss 0.37
+| epoch 980 |  iter 1 / 2 | time 0[s] | loss 0.72
+| epoch 981 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 982 |  iter 1 / 2 | time 0[s] | loss 0.47
+| epoch 983 |  iter 1 / 2 | time 0[s] | loss 0.54
+| epoch 984 |  iter 1 / 2 | time 0[s] | loss 0.42
+| epoch 985 |  iter 1 / 2 | time 0[s] | loss 0.74
+| epoch 986 |  iter 1 / 2 | time 0[s] | loss 0.40
+| epoch 987 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 988 |  iter 1 / 2 | time 0[s] | loss 0.43
+| epoch 989 |  iter 1 / 2 | time 0[s] | loss 0.49
+| epoch 990 |  iter 1 / 2 | time 0[s] | loss 0.71
+| epoch 991 |  iter 1 / 2 | time 0[s] | loss 0.61
+| epoch 992 |  iter 1 / 2 | time 0[s] | loss 0.42
+| epoch 993 |  iter 1 / 2 | time 0[s] | loss 0.67
+| epoch 994 |  iter 1 / 2 | time 0[s] | loss 0.42
+| epoch 995 |  iter 1 / 2 | time 0[s] | loss 0.60
+| epoch 996 |  iter 1 / 2 | time 0[s] | loss 0.42
+| epoch 997 |  iter 1 / 2 | time 0[s] | loss 0.56
+| epoch 998 |  iter 1 / 2 | time 0[s] | loss 0.47
+| epoch 999 |  iter 1 / 2 | time 0[s] | loss 0.54
+| epoch 1000 |  iter 1 / 2 | time 0[s] | loss 0.65
+</pre></div>
+</div>
+<img alt="_images/chap3_11_3.png" src="_images/chap3_11_3.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>you [-1.0213532 -1.0222129 -1.2932118  1.3591229  1.0661011]
+say [ 1.2504692   1.2278728   0.48122954  0.03957964 -1.2391146 ]
+goodbye [-1.0243218  -0.9932074  -0.5173447   0.48835573  0.9855753 ]
+and [ 1.0521587  1.0766481  1.5681276 -1.5974989 -1.0676571]
+i [-1.0055407 -0.9694629 -0.4986876  0.500717   0.9495368]
+hello [-1.0041271 -1.0164264 -1.277528   1.3526788  1.0836056]
+. [ 1.0567107  1.0582879 -1.5083004  1.3834352 -1.0577483]
+</pre></div>
+</div>
+</div>
+</div>
+<p>最後に出力されているのが単語のベクトル</p>
+<div class="section" id="skip-gram">
+<h3>3.5.2 skip-gram<a class="headerlink" href="#skip-gram" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>skip-gram は CBOW の context と target が逆に形</p></li>
+<li><p>CBOW のほうが高速だが skip-gram のほうが精度が良い</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># skip-gram の実装</span>
+<span class="kn">from</span> <span class="nn">ch03</span> <span class="kn">import</span> <span class="n">simple_skip_gram</span>
+simple_skip_gram<span class="o">??</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="vs">
+<h3>3.5.3 カウントベース vs 推論ベース<a class="headerlink" href="#vs" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>語彙に単語を追加する場合、カウントベースではゼロからやりなおす必要がある</p></li>
+<li><p>推論ベースでは再学習ができる</p></li>
+<li><p>精度的には優劣はつけられない</p></li>
+<li><p>GloVe は2つを融合させたようなもの</p></li>
+</ul>
 </div>
 </div>
 </div>
