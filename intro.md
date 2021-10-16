@@ -1,16 +1,7 @@
-# Welcome to your Jupyter Book
+# 『ゼロから作る Deep Learning ❷』 のやっていき記録
 
-This is a small sample book to give you a feel for how book content is
-structured.
+- 『ゼロから作る Deep Learning ❷』 ([Amazon]((https://amzn.to/3lL6ILi))) ([O'reilly](https://www.oreilly.co.jp/books/9784873118369/)))
 
-:::{note}
-Here is a note!
-:::
+## Reference
 
-And here is a code block:
-
-```
-e = mc^2
-```
-
-Check out the content pages bundled with this sample book to see more.
+- [oreilly-japan/deep-learning-from-scratch-2: 『ゼロから作る Deep Learning ❷』(O'Reilly Japan, 2018)](https://github.com/oreilly-japan/deep-learning-from-scratch-2)
