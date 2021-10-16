@@ -42,6 +42,8 @@
     <script src="_static/copybutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
     <script>
         const thebe_selector = ".thebe"
@@ -155,11 +157,11 @@
         aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
     <div class="dropdown-buttons sourcebuttons">
         <a class="repository-button"
-            href="https://github.com/executablebooks/jupyter-book"><button type="button" class="btn btn-secondary topbarbtn"
+            href="https://github.com/pn11/zero-deep-2"><button type="button" class="btn btn-secondary topbarbtn"
                 data-toggle="tooltip" data-placement="left" title="Source repository"><i
                     class="fab fa-github"></i>repository</button></a>
         <a class="issues-button"
-            href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fchap3.html&body=Your%20issue%20content%20here."><button
+            href="https://github.com/pn11/zero-deep-2/issues/new?title=Issue%20on%20page%20%2Fchap3.html&body=Your%20issue%20content%20here."><button
                 type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
                 title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
         
@@ -180,7 +182,7 @@
         aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
     <div class="dropdown-buttons">
         
-        <a class="binder-button" href="https://mybinder.org/v2/gh/executablebooks/jupyter-book/master?urlpath=tree/docs/chap3.ipynb"><button type="button"
+        <a class="binder-button" href="https://mybinder.org/v2/gh/pn11/zero-deep-2/master?urlpath=tree/chap3.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
                 data-placement="left"><img class="binder-button-logo"
                     src="_static/images/logo_binder.svg"
@@ -203,9 +205,21 @@
             <nav id="bd-toc-nav" aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#continuous-bag-of-words">
-   3.2.1 Continuous Bag of Words
+  <a class="reference internal nav-link" href="#nn">
+   3.1 推論ベースの手法と NN
   </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#word2vec">
+   3.2 word2vec
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#cbow">
+     3.2.1 CBOW の推論処理
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -220,8 +234,66 @@
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="chap3-word2vec">
 <h1>Chap3: word2vec<a class="headerlink" href="#chap3-word2vec" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="continuous-bag-of-words">
-<h2>3.2.1 Continuous Bag of Words<a class="headerlink" href="#continuous-bag-of-words" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">(),</span> <span class="s1">&#39;deep-learning-from-scratch-2&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="nn">
+<h2>3.1 推論ベースの手法と NN<a class="headerlink" href="#nn" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>カウントベースだと単語の種類が増えると行列が巨大になってしまい、次元を削減するための特異値分解 (SVD) も $<span class="math notranslate nohighlight">\(O(n^3)\)</span>$ の計算量</p></li>
+<li><p>マスクされた部分の単語を推測する推論ベースの手法</p></li>
+<li><p>推論ベースでは NN に固定長の vector を入力するため、例えば文を one-hot 表現にして入力</p></li>
+</ul>
+</div>
+<div class="section" id="word2vec">
+<h2>3.2 word2vec<a class="headerlink" href="#word2vec" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>word2vec では continuous bag-of-words (CBOW) と skip-gram が使われる (どっちも NN)</p></li>
+</ul>
+<div class="section" id="cbow">
+<h3>3.2.1 CBOW の推論処理<a class="headerlink" href="#cbow" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>CBOW は context から target (中央の単語) を推測する</p></li>
+<li><p>入力層は context として入力する単語の数</p></li>
+<li><p>入力層から中間層に変換する全結合層の重みが単語の分散表現となる</p>
+<ul>
+<li><p>これは学習が進むと更新されていき、「意味」もエンコードされるようになっていく</p></li>
+<li><p>中間層のニューロンの数が入力層のニューロンの数より少ないことで情報が密にエンコードされる</p></li>
+</ul>
+</li>
+<li><p>入力層が複数あるような全結合のネットワーク</p></li>
+<li><p>CBOW の推論処理のコードは下記</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ch03</span> <span class="kn">import</span> <span class="n">cbow_predict</span>
+
+cbow_predict<span class="o">??</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_2458</span><span class="o">/</span><span class="mf">2756750444.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">ch03</span> <span class="kn">import</span> <span class="n">cbow_predict</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> 
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">run_line_magic</span><span class="p">(</span><span class="s1">&#39;pinfo2&#39;</span><span class="p">,</span> <span class="s1">&#39;cbow_predict&#39;</span><span class="p">)</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;ch03&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 
